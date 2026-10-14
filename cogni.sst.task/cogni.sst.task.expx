@@ -112,7 +112,7 @@
                         <instrument name="TriggerGenerator" interface="trigger-generator" />
                     </stimulation-scripts>
 
-                    <stimulation-pattern time-base="milliseconds">
+                    <stimulation-pattern time-base="seconds">
                         <sequence Tperiod="StopSignalPeriod" iterations="NumberOfStimuli * StopSignalTrainingStopSignals" />                        
                     </stimulation-pattern>
 
