@@ -1,4 +1,6 @@
 ﻿import random
+import winsound
+import threading
 
 class TriggerRecording:
     def __init__(self, tc):
@@ -90,9 +92,16 @@ class StopSignalTask:
         if self.signal == 0:
             self.display.Display(self.images.StopLeft)
         else:
-            self.display.Display(self.images.StopRight)    
+            self.display.Display(self.images.StopRight)  
+
+        threading.Thread(target=self.StopSound, daemon=True).start()  
 
         return self.responseTimeout - self.algorithm.delay
+
+    def StopSound(self):
+        frequency = 1000
+        duration = 1000
+        winsound.Beep(frequency, duration)
             
     def Feedback(self):
         if self.response.GetLatched() != "none":
