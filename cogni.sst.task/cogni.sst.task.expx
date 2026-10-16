@@ -138,7 +138,7 @@
                         <dependency id="StopSignalTaskTraining" />                        
                     </dependencies>
 
-                    <stimulation-scripts initialize="CognitiveTask.Initialize(50, StopSignalTaskTraining.Annotations.sstLastStopSignalDelay)"
+                    <stimulation-scripts initialize="CognitiveTask.Initialize(50, 250)"
                                          stimulate="CognitiveTask.Stimulate()"
                                          stimulus-description="Image"
                                          stimulus-unit="N/A">
