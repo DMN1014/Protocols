@@ -28,12 +28,12 @@ class UpDownAlgorithm:
         self.Log.Debug("Stop Signal Delays [ {delays} ]", self.stopSignalDelay)
 
     def Iterate(self, answer):
+        self.stopSignalDelay.append(self.delay)
+
         if answer:
             self.delay = int(self.delay + self.stepsize) if self.delay + self.stepsize < self.highLimit else self.highLimit
         else:
             self.delay = int(self.delay - self.stepsize) if self.delay - self.stepsize > self.lowerLimit else self.lowerLimit
-        
-        self.stopSignalDelay.append(self.delay)
 
 class StopSignalTask:
     def __init__(self, tc, algorithm, feedback, triggers):
