@@ -83,6 +83,10 @@
             <variable name="StopSignalFeedbackTime" value="1000"/>
             <variable name="StopSignalPause" value="1000"/>
             <variable name="StopSignalPeriod" value="(StopSignalFixationDelay + StopSignalResponseTimeout + StopSignalFeedbackDelay + StopSignalFeedbackTime + StopSignalPause)/1000"/>
+            <variable name="RestPeriodBetweenBlocks" value="30000" />
+            <variable name="CountdownTime3" value="1000" />
+            <variable name="CountdownTime2" value="1000" />
+            <variable name="CountdownTime1" value="1000" />
 
             <variable name="StopSignalTrials" value="50"/>
             <variable name="StopSignalConfidenceLevel" value="0.95"/>
@@ -179,6 +183,10 @@
                     <alias replace="Slide7" with="Instructions" />
                     <alias replace="Slide8" with="Clear" />
                     <alias replace="Slide9" with="FixationCross" />
+                    <alias replace="Slide10" with="Rest" />
+                    <alias replace="Slide11" with="Countdown3" />
+                    <alias replace="Slide12" with="Countdown2" />
+                    <alias replace="Slide13" with="Countdown1" />
                 </aliases>
             </file-asset>
             <file-asset file="StopSignalScript.py" />
