@@ -221,11 +221,14 @@ class CognitiveTask:
     def __init__(self, tc):
         self.tc = tc        
 
-    def Initialize(self, stepsize, initialDelay):
+    def Initialize(self, stepsize, initialDelay, useBlockCountdown=False):
         self.Triggers = TriggerRecording(self.tc)
         self.Feedback = TaskFeedback(self.tc)
         self.StopTask = StopSignalTask(self.tc, UpDownAlgorithm(self.tc, stepsize, initialDelay), self.Feedback, self.Triggers)
-        self.GoTask = GoSignalTask(self.tc, self.Feedback, self.Triggers)        
+        self.GoTask = GoSignalTask(self.tc, self.Feedback, self.Triggers)
+        self.useBlockCountdown = useBlockCountdown
+        self.trialsPerBlock = int(self.tc.StopSignalTrialsPerBlock) if useBlockCountdown else 0
+        self.trialCount = 0
         return True
 
     def Complete(self):
@@ -237,25 +240,46 @@ class CognitiveTask:
     def Stimulate(self):
         tc = self.tc
         display = tc.Instruments.ImageDisplay
-        
-        
-        if tc.StimulusName == "STOP":
-            tc.Scheduler.Run(tc.Scheduler.Create()
-                        .Add(tc.StopSignalFixationDelay, lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
-                        .Add(lambda: self.StopTask.Go())
-                        .Add(lambda: self.StopTask.Stop())
-                        .Add(tc.StopSignalFeedbackDelay, lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
-                        .Add(lambda: self.StopTask.Feedback()))
-            
-        elif tc.StimulusName == "GO":
-            tc.Scheduler.Run(tc.Scheduler.Create()
-                        .Add(tc.StopSignalFixationDelay, lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
-                        .Add(lambda: self.GoTask.Go())
-                        .Add(tc.StopSignalFeedbackDelay, lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
-                        .Add(lambda: self.GoTask.Feedback()))
-        else:
-            tc.Log.Error("Unknown stimulus: {name}".format(name = tc.StimulusName))
 
+        if tc.StimulusName not in ("STOP", "GO"):
+            tc.Log.Error("Unknown stimulus: {name}".format(name=tc.StimulusName))
+            return True
+
+        isBlockStart = self.useBlockCountdown and self.trialCount % self.trialsPerBlock == 0
+        isInterBlockRest = (
+            self.useBlockCountdown
+            and self.trialCount % self.trialsPerBlock == self.trialsPerBlock - 1
+            and self.trialCount < self.trialsPerBlock * int(tc.StopSignalNumberOfBlocks) - 1
+        )
+        self.trialCount += 1
+
+        schedule = tc.Scheduler.Create()
+        if isBlockStart:
+            schedule.Add(lambda: display.Display(tc.Assets.StopSignalImages.Countdown3))
+            schedule.Add(tc.CountdownTime3, lambda: display.Display(tc.Assets.StopSignalImages.Countdown2))
+            schedule.Add(tc.CountdownTime2, lambda: display.Display(tc.Assets.StopSignalImages.Countdown1))
+            schedule.Add(tc.CountdownTime1 + tc.StopSignalFixationDelay,
+                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+        else:
+            schedule.Add(tc.StopSignalFixationDelay,
+                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+
+        if tc.StimulusName == "STOP":
+            schedule.Add(lambda: self.StopTask.Go())
+            schedule.Add(lambda: self.StopTask.Stop())
+            schedule.Add(tc.StopSignalFeedbackDelay,
+                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+            schedule.Add(lambda: self.StopTask.Feedback())
+        else:
+            schedule.Add(lambda: self.GoTask.Go())
+            schedule.Add(tc.StopSignalFeedbackDelay,
+                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+            schedule.Add(lambda: self.GoTask.Feedback())
+
+        if isInterBlockRest:
+            schedule.Add(lambda: display.Display(tc.Assets.StopSignalImages.Rest))
+
+        tc.Scheduler.Run(schedule)
         return True
 
 def CreateTask(tc):

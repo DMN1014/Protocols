@@ -74,7 +74,11 @@
         <variables>
             <!-- Defines for the Stop-Signal Task -->
             <variable name="StopSignalTrainingStopSignals" value="2 if 'TEST' in Participant else 5"/> 
-            <variable name="StopSignalNumberOfStopSignals" value="5 if 'TEST' in Participant else 30"/> 
+            <variable name="StopSignalNumberOfStopSignals" value="5 if 'TEST' in Participant else 32"/>
+            <variable name="StopSignalStopSignalsPerBlock" value="1 if 'TEST' in Participant else 8"/>
+            <variable name="StopSignalGoSignalsPerBlock" value="3 if 'TEST' in Participant else 24"/>
+            <variable name="StopSignalTrialsPerBlock" value="StopSignalStopSignalsPerBlock + StopSignalGoSignalsPerBlock"/>
+            <variable name="StopSignalNumberOfBlocks" value="int(StopSignalNumberOfStopSignals / StopSignalStopSignalsPerBlock)"/>
             <variable name="StopSignalLowDelayLimit" value="50"/>
             <variable name="StopSignalHighDelayLimit" value="750"/>
             <variable name="StopSignalFixationDelay"  value="500"/>
@@ -87,6 +91,7 @@
             <variable name="CountdownTime3" value="1000" />
             <variable name="CountdownTime2" value="1000" />
             <variable name="CountdownTime1" value="1000" />
+            <variable name="CountdownPeriod" value="(CountdownTime3 + CountdownTime2 + CountdownTime1)/1000"/>
 
             <variable name="StopSignalTrials" value="50"/>
             <variable name="StopSignalConfidenceLevel" value="0.95"/>
@@ -142,7 +147,7 @@
                         <dependency id="StopSignalTaskTraining" />                        
                     </dependencies>
 
-                    <stimulation-scripts initialize="CognitiveTask.Initialize(50, 250)"
+                    <stimulation-scripts initialize="CognitiveTask.Initialize(50, 250, True)"
                                          stimulate="CognitiveTask.Stimulate()"
                                          stimulus-description="Image"
                                          stimulus-unit="N/A">
@@ -152,12 +157,24 @@
                     </stimulation-scripts>
 
                     <stimulation-pattern time-base="seconds">
-                        <sequence Tperiod="StopSignalPeriod" iterations="NumberOfStimuli * StopSignalNumberOfStopSignals" />
+                        <sequence>
+                            <sequence iterations="StopSignalNumberOfBlocks - 1">
+                                <sequence>
+                                    <sequence Tperiod="CountdownPeriod + StopSignalPeriod" iterations="1"/>
+                                    <sequence Tperiod="StopSignalPeriod" iterations="StopSignalTrialsPerBlock - 1"/>
+                                    <sequence Tperiod="RestPeriodBetweenBlocks/1000" iterations="1" stimulate="false"/>
+                                </sequence>
+                            </sequence>
+                            <sequence>
+                                <sequence Tperiod="CountdownPeriod + StopSignalPeriod" iterations="1"/>
+                                <sequence Tperiod="StopSignalPeriod" iterations="StopSignalTrialsPerBlock - 1"/>
+                            </sequence>
+                        </sequence>
                     </stimulation-pattern>
 
                     <stimuli order="block-random">
-                        <stimulus name="GO" count="3" />                        
-                        <stimulus name="STOP" count="1"/>
+                        <stimulus name="GO" count="StopSignalGoSignalsPerBlock" />
+                        <stimulus name="STOP" count="StopSignalStopSignalsPerBlock"/>
                     </stimuli>
                 </stimulation-sequence>    
             </procedure-templates>
