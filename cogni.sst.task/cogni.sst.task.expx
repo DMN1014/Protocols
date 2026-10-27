@@ -180,6 +180,16 @@
             </procedure-templates>
         </templates>
         <procedures>
+            <!-- TEST FOR QUESTIONNAIRE-->
+            <questionnaire id="CheckListResearcher" name="Check List Prior to Test" control="operator">
+                <content>
+                    <likert id="EEGprep" title="EEG" instruction="Have you prepped the participant for EEG measurements?">
+                        <choice value="0" label="Yes" />
+                        <choice value="1" label="No" />
+                    </likert>
+                </content>
+            </questionnaire>
+            <!-- TEST ENDED-->
             <stimulation-sequence-constructor id="StopSignalTaskTraining" 
                 name="Stop Signal Task (Training Task)"
                 template="StopSignalTaskTraining" />
