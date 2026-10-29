@@ -96,7 +96,7 @@
             <variable name="StopSignalTrials" value="50"/>
             <variable name="StopSignalConfidenceLevel" value="0.95"/>
 
-            <variable name="CognitiveTask" value="func: StopSignalScript.CreateTask(tc)"/>
+            <variable name="CognitiveTask" value="func: AuditoryStopSignalScript.CreateTask(tc)"/>
         </variables>
         <templates>
             <procedure-templates>
@@ -216,7 +216,7 @@
                     <alias replace="Slide13" with="Countdown1" />
                 </aliases>
             </file-asset>
-            <file-asset file="StopSignalScript.py" />
+            <file-asset file="AuditoryStopSignalScript.py" />
         </assets>
     </protocol>
     <post-actions>
@@ -226,9 +226,9 @@
             separator=";"
             filename="dynamic: '{subject}.csv'.format(subject = Subject)">
             <item name="ID" value="Subject" default="NA"/>
-            <item name="RT" value="func: StopSignalScript.CalculateRT(tc)" default="NA" />
-            <item name="SSD" value="func: StopSignalScript.CalculateSSD(tc)" default="NA" />
-            <item name="SSRT" value="func: StopSignalScript.CalculateSSRT(tc)" default="NA" />
+            <item name="RT" value="func: AuditoryStopSignalScript.CalculateRT(tc)" default="NA" />
+            <item name="SSD" value="func: AuditoryStopSignalScript.CalculateSSD(tc)" default="NA" />
+            <item name="SSRT" value="func: AuditoryStopSignalScript.CalculateSSRT(tc)" default="NA" />
         </export-to-csv>                        
     </post-actions>
 </experiment>
