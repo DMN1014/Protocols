@@ -114,7 +114,12 @@
             <protocol id="cogni.sst.game"
                 name="Stop Signal Game"
                 labbench-version="6.0"
-                category="Template Protocol;Cognitive Task"/>              
+                category="Template Protocol;Cognitive Task"/>
+            <!-- This is where the new protocol name is going to be listed-->
+             <protocol id="cogni.sst.audtask" 
+                name="Auditory Stop Signal Task" 
+                labbench-version="6.0" 
+                category="Cognitive Task"/>              
         </category>
         <category name="Stroop Tasks" id="cogni.stroop">
             <protocol id="cogni.stroop.task"

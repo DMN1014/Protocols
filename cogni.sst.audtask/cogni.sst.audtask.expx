@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<experiment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="https://files.labbench.io/xsd/6.0/experiment.xsd">
+   <experimental-setup-variants default="JOYSTICK">
+    <experimental-setup name="Joystick" id="JOYSTICK">
+        <devices>
+            <joystick id="joystick">
+                <map experimental-setup-id="sstSetup">
+                    <button-assignment code="80" button="left" label="Left"/> <!-- number: 5-->
+                    <button-assignment code="160" button="right" label="Right"/> <!--  number: 7 -->
+                </map>
+            </joystick>
+
+            <display id="display"
+                     normative-distance="40">
+
+                <typography active-colour="rgb(255,255,255)"
+                            background-colour="rgb(0,0,0)"
+                            inactive-colour="rgb(32,32,32)" />                    
+
+                <configurations>
+                    <image-display id="image"
+                        experimental-setup-id="sstSetup"
+                        background-colour="rgb(0,0,0)" />
+                </configurations>                
+            </display>         
+        </devices>
+        <device-mapping>
+            <device-assignment device-id="joystick" instrument-name="Button" />
+            <device-assignment device-id="display.image" instrument-name="ImageDisplay"/>
+            <device-assignment device-id="joystick" instrument-name="TriggerGenerator" />
+        </device-mapping>        
+    </experimental-setup>    
+    <experimental-setup name="LabBench I/O" id="LIO">
+        <devices>
+            <lio id="lio">
+                <response-devices>
+                    <response-pad id="pad" 
+                        type="button-4-cross" 
+                        timing-source="response-port02">
+                        <map experimental-setup-id="sstSetup">
+                            <button-assignment code="5" button="left" label="Left" />
+                            <button-assignment code="6" button="right" label="Right" />
+                        </map>
+                    </response-pad>
+                    <visual-trigger id="vtrig"
+                        arming-period="200" 
+                        timing-source="response-port02" />
+                </response-devices>
+            </lio>
+
+            <display id="display"
+                     normative-distance="40">
+
+                <typography active-colour="rgb(255,255,255)"
+                            background-colour="rgb(0,0,0)"
+                            inactive-colour="rgb(32,32,32)" />                    
+
+                <configurations>
+                    <image-display id="image"
+                        experimental-setup-id="sstSetup"
+                        background-colour="rgb(0,0,0)" />
+                </configurations>                
+            </display>         
+        </devices>
+        <device-mapping>
+            <device-assignment device-id="lio.pad" instrument-name="Button" />
+            <device-assignment device-id="display.image" instrument-name="ImageDisplay"/>
+            <device-assignment device-id="lio" instrument-name="TriggerGenerator" />
+        </device-mapping>        
+    </experimental-setup>
+   </experimental-setup-variants>                    
+    <protocol>
+        <variables>
+            <!-- Defines for the Stop-Signal Task -->
+            <variable name="StopSignalTrainingStopSignals" value="2 if 'TEST' in Participant else 5"/> 
+            <variable name="StopSignalNumberOfStopSignals" value="5 if 'TEST' in Participant else 32"/>
+            <variable name="StopSignalStopSignalsPerBlock" value="1 if 'TEST' in Participant else 8"/>
+            <variable name="StopSignalGoSignalsPerBlock" value="3 if 'TEST' in Participant else 24"/>
+            <variable name="StopSignalTrialsPerBlock" value="StopSignalStopSignalsPerBlock + StopSignalGoSignalsPerBlock"/>
+            <variable name="StopSignalNumberOfBlocks" value="int(StopSignalNumberOfStopSignals / StopSignalStopSignalsPerBlock)"/>
+            <variable name="StopSignalLowDelayLimit" value="50"/>
+            <variable name="StopSignalHighDelayLimit" value="750"/>
+            <variable name="StopSignalFixationDelay"  value="500"/>
+            <variable name="StopSignalResponseTimeout"  value="1000"/>
+            <variable name="StopSignalFeedbackDelay" value="1000"/>            
+            <variable name="StopSignalFeedbackTime" value="1000"/>
+            <variable name="StopSignalPause" value="1000"/>
+            <variable name="StopSignalPeriod" value="(StopSignalFixationDelay + StopSignalResponseTimeout + StopSignalFeedbackDelay + StopSignalFeedbackTime + StopSignalPause)/1000"/>
+            <variable name="RestPeriodBetweenBlocks" value="30000" />
+            <variable name="CountdownTime3" value="1000" />
+            <variable name="CountdownTime2" value="1000" />
+            <variable name="CountdownTime1" value="1000" />
+            <variable name="CountdownPeriod" value="(CountdownTime3 + CountdownTime2 + CountdownTime1)/1000"/>
+
+            <variable name="StopSignalTrials" value="50"/>
+            <variable name="StopSignalConfidenceLevel" value="0.95"/>
+
+            <variable name="CognitiveTask" value="func: StopSignalScript.CreateTask(tc)"/>
+        </variables>
+        <templates>
+            <procedure-templates>
+                <stimulation-sequence id="StopSignalTaskTraining"
+                    experimental-setup-id="sstSetup"
+                    response-collection="none"
+                    stimulus-update-rate="44100">
+
+                    <procedure-events complete="CognitiveTask.Complete()" />
+
+                    <properties>
+                        <participant-instructions experimental-setup-id="sstSetup"
+                            default="Assets.StopSignalImages.Instructions" />
+                    </properties>
+
+                    <stimulation-scripts initialize="CognitiveTask.Initialize(100, 150)"
+                                        stimulate="CognitiveTask.Stimulate()"
+                                        stimulus-description="Image"
+                                        stimulus-unit="N/A">
+                        <instrument name="ImageDisplay" interface="image-display"/>
+                        <instrument name="Button" interface="button"/>
+                        <instrument name="TriggerGenerator" interface="trigger-generator" />
+                    </stimulation-scripts>
+
+                    <stimulation-pattern time-base="seconds">
+                        <sequence Tperiod="StopSignalPeriod" iterations="NumberOfStimuli * StopSignalTrainingStopSignals" />                        
+                    </stimulation-pattern>
+
+                    <stimuli order="block-random">
+                        <stimulus name="GO" count="3" />
+                        <stimulus name="STOP" count="1"/>
+                    </stimuli>
+                </stimulation-sequence>
+
+                <stimulation-sequence id="StopSignalTask"
+                    experimental-setup-id="sstSetup"
+                    response-collection="none"
+                    stimulus-update-rate="44100">
+
+                    <procedure-events complete="CognitiveTask.Complete()" />
+
+                    <properties>
+                        <participant-instructions experimental-setup-id="sstSetup"
+                            default="Assets.StopSignalImages.Instructions" />
+                    </properties>
+
+                    <dependencies>
+                        <dependency id="StopSignalTaskTraining" />                        
+                    </dependencies>
+
+                    <stimulation-scripts initialize="CognitiveTask.Initialize(50, 250, True)"
+                                         stimulate="CognitiveTask.Stimulate()"
+                                         stimulus-description="Image"
+                                         stimulus-unit="N/A">
+                        <instrument name="ImageDisplay" interface="image-display"/>
+                        <instrument name="Button" interface="button"/>
+                        <instrument name="TriggerGenerator" interface="trigger-generator" />
+                    </stimulation-scripts>
+
+                    <stimulation-pattern time-base="seconds">
+                        <sequence>
+                            <sequence iterations="StopSignalNumberOfBlocks - 1">
+                                <sequence>
+                                    <sequence Tperiod="CountdownPeriod + StopSignalPeriod" iterations="1"/>
+                                    <sequence Tperiod="StopSignalPeriod" iterations="StopSignalTrialsPerBlock - 1"/>
+                                    <sequence Tperiod="RestPeriodBetweenBlocks/1000" iterations="1" stimulate="false"/>
+                                </sequence>
+                            </sequence>
+                            <sequence>
+                                <sequence Tperiod="CountdownPeriod + StopSignalPeriod" iterations="1"/>
+                                <sequence Tperiod="StopSignalPeriod" iterations="StopSignalTrialsPerBlock - 1"/>
+                            </sequence>
+                        </sequence>
+                    </stimulation-pattern>
+
+                    <stimuli order="block-random">
+                        <stimulus name="GO" count="StopSignalGoSignalsPerBlock" />
+                        <stimulus name="STOP" count="StopSignalStopSignalsPerBlock"/>
+                    </stimuli>
+                </stimulation-sequence>    
+            </procedure-templates>
+        </templates>
+        <procedures>
+            <!-- TEST FOR QUESTIONNAIRE-->
+            <questionnaire id="CheckListResearcher" name="Check List Prior to Test" control="operator">
+                <content>
+                    <likert id="EEGprep" title="EEG" instruction="Have you prepped the participant for EEG measurements?">
+                        <choice value="0" label="Yes" />
+                        <choice value="1" label="No" />
+                    </likert>
+                </content>
+            </questionnaire>
+            <!-- TEST ENDED-->
+            <stimulation-sequence-constructor id="StopSignalTaskTraining" 
+                name="Stop Signal Task (Training Task)"
+                template="StopSignalTaskTraining" />
+
+            <stimulation-sequence-constructor id="StopSignalTask" 
+                name="Stop Signal Task"
+                template="StopSignalTask"/>
+        </procedures>
+        <assets>
+            <file-asset file="StopSignalImages.zip">
+                <aliases>
+                    <alias replace="Slide1" with="Right" />
+                    <alias replace="Slide2" with="Left" />
+                    <alias replace="Slide3" with="StopRight" />
+                    <alias replace="Slide4" with="StopLeft" />
+                    <alias replace="Slide5" with="Correct" />
+                    <alias replace="Slide6" with="Wrong" />
+                    <alias replace="Slide7" with="Instructions" />
+                    <alias replace="Slide8" with="Clear" />
+                    <alias replace="Slide9" with="FixationCross" />
+                    <alias replace="Slide10" with="Rest" />
+                    <alias replace="Slide11" with="Countdown3" />
+                    <alias replace="Slide12" with="Countdown2" />
+                    <alias replace="Slide13" with="Countdown1" />
+                </aliases>
+            </file-asset>
+            <file-asset file="StopSignalScript.py" />
+        </assets>
+    </protocol>
+    <post-actions>
+        <export-to-csv name="Export to CSV"
+            location="C:\LabBenchData\cogni.sst.task"
+            header="true"
+            separator=";"
+            filename="dynamic: '{subject}.csv'.format(subject = Subject)">
+            <item name="ID" value="Subject" default="NA"/>
+            <item name="RT" value="func: StopSignalScript.CalculateRT(tc)" default="NA" />
+            <item name="SSD" value="func: StopSignalScript.CalculateSSD(tc)" default="NA" />
+            <item name="SSRT" value="func: StopSignalScript.CalculateSSRT(tc)" default="NA" />
+        </export-to-csv>                        
+    </post-actions>
+</experiment>
