@@ -255,7 +255,7 @@ class CognitiveTask:
 
         schedule = tc.Scheduler.Create()
         if isBlockStart:
-            schedule.Add(lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown3))
+            schedule.Add(0, lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown3))
             schedule.Add(tc.CountdownTime3, lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown2))
             schedule.Add(tc.CountdownTime2, lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown1))
             schedule.Add(tc.CountdownTime1 + tc.StopSignalFixationDelay,
