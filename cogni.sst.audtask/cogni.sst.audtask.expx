@@ -109,7 +109,7 @@
 
                     <properties>
                         <participant-instructions experimental-setup-id="sstSetup"
-                            default="Assets.StopSignalImages.Instructions" />
+                            default="Assets.AudStopSignalImages.Instructions" />
                     </properties>
 
                     <stimulation-scripts initialize="CognitiveTask.Initialize(100, 150)"
@@ -140,7 +140,7 @@
 
                     <properties>
                         <participant-instructions experimental-setup-id="sstSetup"
-                            default="Assets.StopSignalImages.Instructions" />
+                            default="Assets.AudStopSignalImages.Instructions" />
                     </properties>
 
                     <dependencies>
@@ -199,7 +199,7 @@
                 template="StopSignalTask"/>
         </procedures>
         <assets>
-            <file-asset file="StopSignalImages.zip">
+            <file-asset file="AudStopSignalImages.zip">
                 <aliases>
                     <alias replace="Slide1" with="Right" />
                     <alias replace="Slide2" with="Left" />
@@ -221,7 +221,7 @@
     </protocol>
     <post-actions>
         <export-to-csv name="Export to CSV"
-            location="C:\LabBenchData\cogni.sst.task"
+            location="C:\LabBenchData\cogni.sst.audtask"
             header="true"
             separator=";"
             filename="dynamic: '{subject}.csv'.format(subject = Subject)">

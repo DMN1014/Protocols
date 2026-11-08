@@ -46,7 +46,7 @@ class StopSignalTask:
         self.triggers = triggers
 
         self.response = tc.Instruments.Button
-        self.images = tc.Assets.StopSignalImages
+        self.images = tc.Assets.AudStopSignalImages
         self.algorithm = algorithm
         self.feedbackTime = tc.StopSignalFeedbackTime
         self.responseTimeout = tc.StopSignalResponseTimeout
@@ -138,7 +138,7 @@ class GoSignalTask:
         self.triggers = triggers
 
         self.response = tc.Instruments.Button
-        self.images = tc.Assets.StopSignalImages
+        self.images = tc.Assets.AudStopSignalImages
 
         self.goDelay = tc.StopSignalHighDelayLimit
         self.goSignals = [] # 0: left, 1: right
@@ -202,7 +202,7 @@ class GoSignalTask:
  
 class TaskFeedback:
     def __init__(self, tc):
-        self.images = tc.Assets.StopSignalImages
+        self.images = tc.Assets.AudStopSignalImages
         self.display = tc.Instruments.ImageDisplay
 
     def GoFeedback(self, answer, time):
@@ -255,29 +255,29 @@ class CognitiveTask:
 
         schedule = tc.Scheduler.Create()
         if isBlockStart:
-            schedule.Add(lambda: display.Display(tc.Assets.StopSignalImages.Countdown3))
-            schedule.Add(tc.CountdownTime3, lambda: display.Display(tc.Assets.StopSignalImages.Countdown2))
-            schedule.Add(tc.CountdownTime2, lambda: display.Display(tc.Assets.StopSignalImages.Countdown1))
+            schedule.Add(lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown3))
+            schedule.Add(tc.CountdownTime3, lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown2))
+            schedule.Add(tc.CountdownTime2, lambda: display.Display(tc.Assets.AudStopSignalImages.Countdown1))
             schedule.Add(tc.CountdownTime1 + tc.StopSignalFixationDelay,
-                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+                         lambda: display.Display(tc.Assets.AudStopSignalImages.FixationCross))
         else:
             schedule.Add(tc.StopSignalFixationDelay,
-                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+                         lambda: display.Display(tc.Assets.AudStopSignalImages.FixationCross))
 
         if tc.StimulusName == "STOP":
             schedule.Add(lambda: self.StopTask.Go())
             schedule.Add(lambda: self.StopTask.Stop())
             schedule.Add(tc.StopSignalFeedbackDelay,
-                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+                         lambda: display.Display(tc.Assets.AudStopSignalImages.FixationCross))
             schedule.Add(lambda: self.StopTask.Feedback())
         else:
             schedule.Add(lambda: self.GoTask.Go())
             schedule.Add(tc.StopSignalFeedbackDelay,
-                         lambda: display.Display(tc.Assets.StopSignalImages.FixationCross))
+                         lambda: display.Display(tc.Assets.AudStopSignalImages.FixationCross))
             schedule.Add(lambda: self.GoTask.Feedback())
 
         if isInterBlockRest:
-            schedule.Add(lambda: display.Display(tc.Assets.StopSignalImages.Rest))
+            schedule.Add(lambda: display.Display(tc.Assets.AudStopSignalImages.Rest))
 
         tc.Scheduler.Run(schedule)
         return True
