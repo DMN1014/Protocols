@@ -75,7 +75,7 @@ class StopSignalTask:
 
 
         self.triggerGenerator.GenerateTriggerSequence("port2", self.triggerTlk.Sequence()
-            .Add(self.triggerTlk.CreateTrigger(5).Interface(2).TriggerOut()))
+            .Add(self.triggerTlk.CreateTrigger(5).Interface(1).TriggerOut()))
         
         self.triggers.Add(1 if self.signal == 0 else 2)
         
@@ -120,7 +120,7 @@ class StopSignalTask:
                         self.algorithm.delay)
 
         self.triggerGenerator.GenerateTriggerSequence("port2", self.triggerTlk.Sequence()
-            .Add(self.triggerTlk.CreateTrigger(5).Interface(2).TriggerOut()))
+            .Add(self.triggerTlk.CreateTrigger(5).Interface(1).TriggerOut()))
         
         self.feedback.StopFeedback(self.answer[-1])
 
@@ -165,7 +165,7 @@ class GoSignalTask:
         self.goSignals.append(self.signal)
                
         self.triggerGenerator.GenerateTriggerSequence("port2", self.triggerTlk.Sequence()
-            .Add(self.triggerTlk.CreateTrigger(5).Interface(2).TriggerOut()))
+            .Add(self.triggerTlk.CreateTrigger(5).Interface(1).TriggerOut()))
         
         self.triggers.Add(5 if self.signal == 0 else 6)
 
@@ -194,7 +194,7 @@ class GoSignalTask:
                          self.time[-1])
 
         self.triggerGenerator.GenerateTriggerSequence("port2", self.triggerTlk.Sequence()
-            .Add(self.triggerTlk.CreateTrigger(5).Interface(2).TriggerOut()))
+            .Add(self.triggerTlk.CreateTrigger(5).Interface(1).TriggerOut()))
         
         self.feedback.GoFeedback(self.answer[-1], self.time[-1])
 
